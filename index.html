@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>  
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -571,13 +571,39 @@
   };
   window.__back = function(){ state.dir='back'; state.step=Math.max(0,state.step-1); render(); };
 
-  async function submitSurvey(){
-    try{
-      const payload = { ts:new Date().toISOString(), nome:state.nome, turma:state.turma, segmento:state.segmento, respostas:state.r };
-      const key = 'resposta:'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
-      await window.storage.set(key, JSON.stringify(payload), true);
-    }catch(e){ console.error('Falha ao salvar resposta', e); }
-  }
+async function submitSurvey(){
+
+  const payload = {
+    ts:new Date().toISOString(),
+    nome:state.nome,
+    turma:state.turma,
+    segmento:state.segmento,
+
+    q1: state.r.q1 || '',
+    q2: state.r.q2 || '',
+    q3: state.r.q3 || '',
+    q4: state.r.q4 || '',
+    q5: state.r.q5 || '',
+    q6: state.r.q6 || '',
+    q7: state.r.q7 || '',
+    q8: state.r.q8 || '',
+    q9: state.r.q9 || '',
+    q10: state.r.q10 || '',
+    q11: state.r.q11 || ''
+  };
+
+  await fetch('/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      'form-name': 'avaliacao-reacao',
+      ...payload
+    }).toString()
+  });
+
+}
 
   function avg(arr){ const v=arr.filter(x=>typeof x==='number'); return v.length ? (v.reduce((a,b)=>a+b,0)/v.length) : null; }
 
@@ -766,5 +792,24 @@
   }
 })();
 </script>
+
+<form name="avaliacao-reacao" method="POST" netlify hidden>
+  <input name="ts">
+  <input name="nome">
+  <input name="turma">
+  <input name="segmento">
+  <input name="q1">
+  <input name="q2">
+  <input name="q3">
+  <input name="q4">
+  <input name="q5">
+  <input name="q6">
+  <input name="q7">
+  <input name="q8">
+  <input name="q9">
+  <input name="q10">
+  <input name="q11">
+</form>
+
 </body>
 </html>
